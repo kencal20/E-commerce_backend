@@ -7,6 +7,7 @@ const PORT = process.env.PORT
 const db = mongoose.connection
 const db_name = process.env.DATABASE_NAME
 const userRouter = require('./routes/userRoutes')
+const productRoutes = require('./routes/productRoutes')
 //middleware
 app.use(express.json())
 app.use(cors())
@@ -18,6 +19,7 @@ db.once('open', () => console.log('Successful in Connecting to database'))
 
 
 app.use('/users/',userRouter())
+app.use('/products/',productRoutes())
 
 
 app.listen(PORT, () => console.log(`Server is hosted on http://localhost:${PORT} `))
