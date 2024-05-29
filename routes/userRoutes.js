@@ -9,7 +9,7 @@ module.exports = function () {
     })
 
     router.post('/create', async (req, res) => {
-        const { name, email, password, address, phone } = req.body
+        const { name, email, password, address, phone, role } = req.body
         try {
             const user = new User({
                 name, email, password, address, phone, role
@@ -21,7 +21,5 @@ module.exports = function () {
             res.send({ message: Error })
         }
     })
-
-
     return router
 }
