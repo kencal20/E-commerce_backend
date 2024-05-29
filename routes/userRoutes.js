@@ -25,6 +25,7 @@ module.exports = function () {
         const { id } = req.params
         const updates = req.body
 
+
         try {
             const updatedUser = await User.findByIdAndUpdate(
                 id,
@@ -39,6 +40,8 @@ module.exports = function () {
             res.status(500).json({ message: 'Error updating user', error: error.message })
         }
     })
+
+
 
     router.delete('/delete/:id', async (req, res) => {
         const { id } = req.params
