@@ -17,9 +17,11 @@ module.exports = function () {
             const newUser = await user.save()
             res.send({ message: 'New User Created', newUser })
         } catch (error) {
-            const Error = error._message
-            res.send({ message: Error })
+            res.send({ error: error.message })
         }
     })
+
+
+
     return router
 }
