@@ -40,6 +40,15 @@ module.exports = function () {
         }
     })
 
+    router.delete('/delete/:id', async (req, res) => {
+        const { id } = req.params
+        try {
+            const deletedUser = await User.findByIdAndDelete(id)
+            res.send({ message: "User has been deleted", deletedUser })
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting user', error: error.message })
+        }
+    })
 
     return router
 }
