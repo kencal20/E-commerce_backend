@@ -1,70 +1,71 @@
-const express = require('express')
-const router = express.Router()
-const User = require('../schemas/userSchema')
+const express = require('express');
+const router = express.Router();
+const User = require('../schemas/userSchema');
 
 module.exports = function (admin) {
     router.get('/', async (req, res) => {
-        const user = await User.find()
-        res.json({ message: 'Hello all users', user })
-    })
-    router.get('/:id', async (req, res) => {
-        const { id } = req.params
+        const users = await User.find();
+        res.json({ message: 'Hello all users', users });
+    });
+
+    router.get('/:email', async (req, res) => {
+        const { email } = req.params;
         try {
-            const user = await User.findById(id)
-            res.json({ message: 'The user You are searching for is ', user })
-
+            const user = await User.findOne({ email });
+            res.json({ message: 'The user you are searching for is ', user });
         } catch (error) {
-            res.send({ error: error.message })
+            res.send({ error: error.message });
         }
-
-    })
+    });
 
     router.post('/create', async (req, res) => {
-        const { name, email, password, address, phone, role } = req.body
+        const { name, email, password, address, phone, role } = req.body;
         try {
-            const firebaseUser = admin.auth().createUser({
+            const firebaseUser = await admin.auth().createUser({
                 email,
                 password
-            })
+            });
 
             const user = new User({
                 name,
                 email,
-                password,
                 address,
                 phone,
                 role,
                 firebaseUid: firebaseUser.uid
-            })
-            const newUser = await user.save()
-            res.send({ message: 'New User Created', newUser })
+            });
+            const newUser = await user.save();
+            res.send({ message: 'New User Created', newUser });
         } catch (error) {
-            res.send({ error: error.message })
+            res.send({ error: error.message });
         }
-    })
+    });
 
-    router.put('/:id', async (req, res) => {
-        const { id } = req.params;
-        const { name, email, password, address, phone, role } = req.body;
+    router.put('/:email', async (req, res) => {
+        const { email } = req.params;
+        const { name, password, address, phone, role } = req.body;
         try {
-            const user = await User.findById(id);
 
-            if (!user) {
+
+            const updatedUser = await User.findOneAndUpdate(
+                { email },
+                { name, address, phone, role },
+                { new: true, runValidators: true }
+            );
+            if (!updatedUser) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
             // If password is provided, update it in Firebase
             if (password) {
-                await admin.auth().updateUser(user.firebaseUid, { password });
+                const userRecord = await admin.auth().getUserByEmail(email);
+                const uid = userRecord.uid;
+
+                // Update the user's password using their UID
+                await admin.auth().updateUser(uid, { password });
             }
 
             // Update other user details in MongoDB
-            const updates = { name, email, address, phone, role };
-            const updatedUser = await User.findByIdAndUpdate(
-                id,
-                updates,
-                { new: true, runValidators: true }
-            );
 
             res.json({ message: 'User has been updated', updatedUser });
         } catch (error) {
@@ -72,18 +73,22 @@ module.exports = function (admin) {
         }
     });
 
-
-
-
-    router.delete('/delete/:id', async (req, res) => {
-        const { id } = req.params
+    router.delete('/:email', async (req, res) => {
+        const { email } = req.params;
         try {
-            const deletedUser = await User.findByIdAndDelete(id)
-            res.send({ message: "User has been deleted", deletedUser })
-        } catch (error) {
-            res.status(500).json({ message: 'Error deleting user', error: error.message })
-        }
-    })
+            const deleteUser = await User.findOneAndDelete({ email });
 
-    return router
-}
+            if (!deleteUser) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            const userRecord = await admin.auth().getUserByEmail(email);
+            await admin.auth().deleteUser(userRecord.uid);
+            res.json({ message: 'User deleted successfully', deleteUser });
+        } catch (error) {
+            res.json({ message: 'Error deleting user', error: error.message });
+        }
+    });
+
+    return router;
+};
