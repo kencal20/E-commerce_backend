@@ -21,6 +21,24 @@ module.exports = function () {
         }
     })
 
+    router.put('/:id', async (req, res) => {
+        const { id } = req.params
+        const updates = req.body
+
+        try {
+            const updatedUser = await User.findByIdAndUpdate(
+                id,
+                updates,
+                { new: true, runValidators: true }
+            )
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User not found' })
+            }
+            res.json({ message: 'User has been updated', updatedUser })
+        } catch (error) {
+            res.status(500).json({ message: 'Error updating user', error: error.message })
+        }
+    })
 
 
     return router
