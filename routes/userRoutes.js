@@ -2,9 +2,11 @@ const express = require('express')
 const router = express.Router()
 const User = require('../schemas/userSchema')
 
-router.get('/', async (req, res) => {
-    const users = await User.find()
-    res.send({ message: 'Welcome to users home', users })
-})
+module.exports =  function () {
+    router.get('/',async (req, res) => {
+        const user = await User.find()
+        res.json({ message: 'Hello all users', user })
+    })
 
-module.exports = router
+    return router
+}
