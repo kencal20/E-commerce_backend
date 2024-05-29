@@ -17,7 +17,7 @@ db.on('error', () => console.log('Error when Connecting to database'))
 db.once('open', () => console.log('Successful in Connecting to database')) 
 
 
-app.use('/user/',userRouter())
+app.use('/users/',userRouter())
 
 
 app.listen(PORT, () => console.log(`Server is hosted on http://localhost:${PORT} `))
