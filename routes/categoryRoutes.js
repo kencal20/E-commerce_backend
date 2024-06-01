@@ -22,10 +22,10 @@ module.exports = function () {
     })
 
     router.post('/create', async (req, res) => {
-        const { name } = req.body
+        const { categoryName } = req.body
         try {
             const category = new Category({
-                name
+                categoryName
             })
 
             const newCategory = await category.save()
