@@ -9,6 +9,34 @@ module.exports = function () {
     })
 
 
- 
+    router.post('/create', async (req, res) => {
+        const { productName, description, price, categoryName, stock, imageUrl } = req.body
+        try {
+            const category = await Category.findOne({ categoryName })
+
+            console.log('Request body:', req.body);
+            if (!category) {
+                console.log(`Category ${category} cannot be found`);
+                return res.json({ message: `Category ${category} cannot be found` })
+            }
+
+            const product = new Product({
+                productName,
+                description,
+                price,
+                category: category._id,
+                stock,
+                imageUrl
+            })
+
+            const newProduct = await product.save()
+            res.json({ message: "New Product Created", newProduct })
+
+        } catch (error) {
+            res.json({ error: error.message })
+
+        }
+    })
+
     return router
 }
