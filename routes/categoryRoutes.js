@@ -8,6 +8,18 @@ module.exports = function () {
         res.json({ message: "List of Categories are ", categories })
     })
 
+    router.get('/:id', async (req, res) => {
+        const { id } = req.params
+        try {
+            const category = await Category.findById( id )
+            if (!category) {
+                return res.json({ message: "Category id Did not match" })
+            }
+            res.json({ message: "Category info is the following ", category })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
 
     router.post('/create', async (req, res) => {
         const { name } = req.body
