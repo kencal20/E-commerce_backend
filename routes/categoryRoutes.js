@@ -9,5 +9,18 @@ module.exports = function () {
     })
 
 
+    router.post('/create', async (req, res) => {
+        const { name } = req.body
+        try {
+            const category = new Category({
+                name
+            })
+
+            const newCategory = await category.save()
+            res.json({ message: "New Category Saved", newCategory })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
     return router
 }
