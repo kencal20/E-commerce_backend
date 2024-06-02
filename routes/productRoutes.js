@@ -18,25 +18,25 @@ module.exports = function () {
             }
             res.json({ messsage: "The result for the id inouted is ", product })
         } catch (error) {
-            res.json({error:error.message})
+            res.json({ error: error.message })
         }
     })
     router.post('/create', async (req, res) => {
         const { productName, description, price, category, stock, imageUrl } = req.body;
         console.log('Request body:', req.body);
-    
+
         if (!category) {
             return res.status(400).json({ message: "Category name is required" });
         }
-    
+
         try {
             const foundCategory = await Category.findOne({ name: category });
-    
+
             if (!foundCategory) {
                 console.log(`Category ${category} cannot be found`);
                 return res.status(404).json({ message: `Category ${category} cannot be found` });
             }
-    
+
             const product = new Product({
                 productName,
                 description,
@@ -45,16 +45,30 @@ module.exports = function () {
                 stock,
                 imageUrl
             });
-    
+
             const newProduct = await product.save();
             res.status(201).json({ message: "New Product Created", newProduct });
-    
+
         } catch (error) {
             console.log(`Error: ${error.message}`);
             res.status(500).json({ error: error.message });
         }
     });
-    
+
+    router.delete('/:id', async (req, res) => {
+
+        const { id } = req.params
+        try {
+            const deletedProduct = await Product.findByIdAndDelete(id)
+            if (!deletedProduct) {
+                return res.json({ message: "Product id Cannot be found" })
+            }
+
+            res.json({ message: "Product has been deleted Successfully", deletedProduct })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
 
     return router
 }
