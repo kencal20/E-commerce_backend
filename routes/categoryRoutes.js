@@ -3,8 +3,7 @@ const router = express.Router()
 const Category = require('../schemas/categorySchema')
 
 module.exports = function () {
-    
-    router.post('/create', async (req, res) => {
+        router.post('/create', async (req, res) => {
         const { categoryName } = req.body
         try {
             const category = new Category({
@@ -50,6 +49,20 @@ module.exports = function () {
             }
 
             res.json({ message: "Category Updated successfully", updatedCategory })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
+
+    router.delete('/:id', async (req, res) => {
+        const { id } = req.params
+        
+        try {
+            const deletedUser = await Category.findByIdAndDelete(id)
+            if (!deletedUser) {
+                return res.json({ message: "Category Id to be deleted Cannot be found" })
+            }
+            res.json({ message: "Category has been deleted Successfully", deletedUser })
         } catch (error) {
             res.json({ error: error.message })
         }
