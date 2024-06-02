@@ -4,28 +4,6 @@ const Product = require('../schemas/productSchema')
 const Category = require('../schemas/categorySchema')
 
 module.exports = function () {
-    router.get('/', async (req, res) => {
-        try {
-            const products = await Product.find().populate('category', 'name')
-            res.json({ message: "This is the list of Products", products })
-        } catch (error) {
-            res.json({ error: error.message })
-        }
-    })
-    
-
-    router.get('/:id', async (req, res) => {
-        const { id } = req.params
-        try {
-            const product = await Product.findById(id).populate('category', 'name')
-            if (!product) {
-                return res.json({ message: "The id Cannot be found" })
-            }
-            res.json({ messsage: "The result for the id inouted is ", product })
-        } catch (error) {
-            res.json({ error: error.message })
-        }
-    })
 
     router.post('/create', async (req, res) => {
         const { productName, description, price, category, stock, imageUrl } = req.body;
@@ -60,6 +38,32 @@ module.exports = function () {
             res.status(500).json({ error: error.message });
         }
     });
+
+
+    router.get('/', async (req, res) => {
+        try {
+            const products = await Product.find().populate('category', 'categoryName')
+            res.json({ message: "This is the list of Products", products })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
+    
+
+    router.get('/:id', async (req, res) => {
+        const { id } = req.params
+        try {
+            const product = await Product.findById(id).populate('category', 'categoryName')
+            if (!product) {
+                return res.json({ message: "The id Cannot be found" })
+            }
+            res.json({ messsage: "The result for the id inouted is ", product })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+    })
+
+  
     
 
     router.put('/:id', async (req, res) => {
