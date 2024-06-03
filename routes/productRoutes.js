@@ -7,20 +7,20 @@ module.exports = function () {
 
     router.post('/create', async (req, res) => {
         const { productName, description, price, category, stock, imageUrl } = req.body;
-   
-    
+
+
         if (!category) {
             return res.status(400).json({ message: "Category name is required" });
         }
-    
+
         try {
             const foundCategory = await Category.findOne({ categoryName: category });
 
-    
+
             if (!foundCategory) {
                 return res.status(404).json({ message: `Category ${category} cannot be found` });
             }
-    
+
             const product = new Product({
                 productName,
                 description,
@@ -29,10 +29,10 @@ module.exports = function () {
                 stock,
                 imageUrl
             });
-    
+
             const newProduct = await product.save();
             res.status(201).json({ message: "New Product Created", newProduct });
-    
+
         } catch (error) {
             console.log(`Error: ${error.message}`);
             res.status(500).json({ error: error.message });
@@ -48,7 +48,7 @@ module.exports = function () {
             res.json({ error: error.message })
         }
     })
-    
+
 
     router.get('/:id', async (req, res) => {
         const { id } = req.params
@@ -63,26 +63,16 @@ module.exports = function () {
         }
     })
 
-  
-    
+
+
 
     router.put('/:id', async (req, res) => {
         const { id } = req.params
-        const { productName, description, price, category, stock, imageUrl } = req.body
-        if (!category) {
-            return res.status(400).json({ message: "Category name is required" });
-        }
-    
+        const { productName, description, price, stock, imageUrl } = req.body
+
         try {
-            const foundCategory = await Category.findOne({ name: category });
-    
-            if (!foundCategory) {
-                console.log(`Category ${category} cannot be found`);
-                return res.status(404).json({ message: `Category ${category} cannot be found` });
-            }
-    
             const updatedProduct = await Product.findByIdAndUpdate(id,
-                { productName, description, price, category: foundCategory._id, stock, imageUrl }, { new: true, runValidators: true }
+                { productName, description, price, stock, imageUrl }, { new: true, runValidators: true }
             ).populate('category', 'name')
             if (!updatedProduct) {
                 return res.json({ message: "The id to be updated does not exist" })
@@ -93,7 +83,7 @@ module.exports = function () {
             res.status(500).json({ error: error.message });
         }
     });
-    
+
 
 
     router.delete('/:id', async (req, res) => {
