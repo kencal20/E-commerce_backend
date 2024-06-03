@@ -2,12 +2,26 @@ const express = require('express');
 const router = express.Router()
 const Order = require('../schemas/orderSchema')
 
-module.exports = function(){
+module.exports = function () {
     router.get('/', async (req, res) => {
         const orders = await Order.find();
-        res.json({ message: 'List of Orders', orders });
-        
+        res.json({ message: 'Hello all orders', orders });
     });
 
-    return router;
+    router.get('/:id', async (req, res) => {
+        const { id } = req.params;
+        try {
+            const order = await Order.findById(id);
+            if (!order) {
+                return res.json({ message: "The id Cannot be found" })
+            }
+            res.json({ messsage: "The result for the id inputed is ", order })
+        } catch (error) {
+            res.json({ error: error.message })
+        }
+
+    });
+
+
+    return router
 }
