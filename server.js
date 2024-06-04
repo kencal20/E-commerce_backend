@@ -9,6 +9,7 @@ const db_name = process.env.DATABASE_NAME
 const userRouter = require('./routes/userRoutes')
 const productRoutes = require('./routes/productRoutes')
 const categoryRoutes = require('./routes/categoryRoutes')
+const orderRoutes = require('./routes/orderRoutes')
 const admin = require('firebase-admin')
 
 //middleware
@@ -29,5 +30,6 @@ admin.initializeApp({
 app.use('/users/', userRouter(admin))
 app.use('/products/', productRoutes())
 app.use('/categories/', categoryRoutes())
+app.use('/orders/', orderRoutes())
 
 app.listen(PORT, () => console.log(`Server is hosted on http://localhost:${PORT} `))
