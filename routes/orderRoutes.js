@@ -35,6 +35,22 @@ module.exports = function () {
         res.json({ message: "Order has been successfuly made", order });
     });
 
+    router.put('/:id', async (req, res) => {
+        const { id } = req.params
+        const { userId,products,totalAmount,status } = req.body
+        try {
+            const updatedOrder = await Order.findByIdAndUpdate(id,
+                {products,totalAmount,status}=req.body
+
+            );
+            if(!updatedOrder){y
+                res.json({message: "Order not found"})
+            }
+            res.json({message:"Order has been successfully updated",updatedOrder})
+        } catch (error) {
+            
+        }
+    })
 
     router.delete('/:id', async (req, res) => {
         const { id } = req.params
@@ -50,7 +66,7 @@ module.exports = function () {
             res.json({ error: error.message });
         }
     })
-    
+
 
     return router
 }
