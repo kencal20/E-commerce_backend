@@ -22,6 +22,19 @@ module.exports = function () {
 
     });
 
+    router.post('/create', async (req, res) => {
+        const { userId, products, totalAmount, status, orderDate } = req.body;
+        const order = new Order({
+            userId,
+            products,
+            totalAmount,
+            status,
+            orderDate
+        });
+        await order.save();
+        res.json({ message: "Order has been successfuly made", order });
+    });
+
 
     return router
 }
