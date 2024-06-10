@@ -43,7 +43,7 @@ module.exports = function () {
                 {products,totalAmount,status}=req.body
 
             );
-            if(!updatedOrder){y
+            if(!updatedOrder){
                 res.json({message: "Order not found"})
             }
             res.json({message:"Order has been successfully updated",updatedOrder})
