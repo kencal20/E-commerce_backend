@@ -3,6 +3,41 @@ const router = express.Router();
 const User = require('../schemas/userSchema');
 
 module.exports = function (admin) {
+    (async () => {
+        try {
+            const count = await User.countDocuments().exec();
+
+            // If no users exist, create a default user
+            if (count === 0) {
+                console.log('Creating default user...');
+                const defaultUserData = {
+                    email: process.env.DEFAULT_USER_EMAIL,
+                    password: process.env.DEFAULT_USER_PASSWORD,
+                    name: process.env.DEFAULT_USER_NAME,
+                    age: process.env.DEFAULT_USER_AGE,
+                    userType: process.env.DEFAULT_USER_TYPE,
+                    birthdate: process.env.DEFAULT_USER_BIRTHDATE, // Include birthdate
+                    target: process.env.DEFAULT_USER_TARGET // Include target
+                };
+
+                // Create user in Firebase
+                const userRecord = await admin.auth().createUser({
+                    email: defaultUserData.email,
+                    password: defaultUserData.password,
+                    emailVerified: false,
+                    disabled: false
+                });
+
+                // Save user data in MongoDB
+                const newUser = new User(defaultUserData);
+                await newUser.save();
+
+                console.log('Default user created successfully.');
+            }
+        } catch (error) {
+            console.error('Error checking user count:', error);
+        }
+    })()
     router.get('/', async (req, res) => {
         const users = await User.find();
         res.json({ message: 'Hello all users', users });
