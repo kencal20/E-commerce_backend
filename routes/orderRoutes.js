@@ -36,21 +36,24 @@ module.exports = function () {
     });
 
     router.put('/:id', async (req, res) => {
-        const { id } = req.params
-        const { userId,products,totalAmount,status } = req.body
+        const { id } = req.params;
+        const { userId, products, totalAmount, status } = req.body;
+    
         try {
-            const updatedOrder = await Order.findByIdAndUpdate(id,
-                {products,totalAmount,status}=req.body
-
+            const updatedOrder = await Order.findByIdAndUpdate(
+                id,
+                { userId, products, totalAmount, status },
+                { new: true ,runValidators:true} 
             );
-            if(!updatedOrder){
-                res.json({message: "Order not found"})
+            if (!updatedOrder) {
+                return res.json({ message: "Order not found" });
             }
-            res.json({message:"Order has been successfully updated",updatedOrder})
+            res.json({ message: "Order has been successfully updated", updatedOrder });
         } catch (error) {
-            
+            res.json({ error: error.message });
         }
-    })
+    });
+    
 
     router.delete('/:id', async (req, res) => {
         const { id } = req.params
